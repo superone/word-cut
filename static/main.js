@@ -54,10 +54,7 @@
             var fn = function( f ){
                 orientation < 0? f-- : f++;
                 if(f == t)
-                    this.wordsArr[f].setCurColor( targCorlor , orientation , function(){
-                        //最后需改变block个word状态
-                        this.updateWordStatus([from , to]);
-                    } , true , this );
+                    this.wordsArr[f].setCurColor( targCorlor , orientation  );
                 else
                     this.wordsArr[f].setCurColor( targCorlor , orientation , fn , f ,this);
                 //设置word状态
@@ -75,12 +72,11 @@
                 comIndex = wordCom.getIndex();
             while( wordCom && comIndex>0 ){
                 if( from == comIndex  ){
-                    if( from <= to){
-                        
+                    if( orientation < 0 ){
+
                     }
                 }
             }
-            
         },
         // //检查block是否可以合并
         // checkBlock : function( block ){
@@ -153,6 +149,13 @@
         },
         setBlocks : function( block ){
             block = block || [this.conf.index, this.conf.index];
+            var min = block[0] <=block[1] ? block[0] : block[1],
+                max = block[0] > block[1] ? block[0] : block[1];
+
+            var index = this.getIndex();
+            if( index > min && index < max ){
+                
+            }
         },
         setMyDom : function( dom ){
             this.$dom = dom;
