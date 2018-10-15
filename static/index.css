@@ -55,11 +55,15 @@ body{
 .keyword-box{
     margin-top:30px;
 }
+.keyword-box .vl-bx{
+    position: relative;
+    display:inline-block;
+    float:left;
+}
 .keyword-box span.vl{
     position: relative;
     display:inline-block;
     box-sizing: border-box;
-    float:left;
     padding:0 3px;
     overflow:hidden;
 }
@@ -84,7 +88,16 @@ body{
 .keyword-box span.vl span.bg-ani{
     /* background:rgb(128, 128, 47); */
 }
-
+.keyword-box .vl-bx .slider{
+    position: absolute;
+    display:block;
+    width:7px;
+    right:-4px;
+    top:-20px;
+    height:40px;
+    background:#fff;
+    z-index:10;
+}
 
 /* .keyword-box .slider{
     position: relative;

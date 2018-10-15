@@ -1,9 +1,12 @@
 (function(){
     var template_text = 
-    `<span class='vl'>
-        <i>{{value}}</i>
-        <span class='bg-bx'></span>
-        <span class='bg-ani'></span>
+    `<span class='vl-bx'>
+        <span class='vl'>
+            <i>{{value}}</i>
+            <span class='bg-bx'></span>
+            <span class='bg-ani'></span>
+        </span>
+        <span class='slider'></span>
     </span>`
     var colors = ['#f9b2c5','#d6bbf3','#cfd0f3','#cfeaf3','#cff3d9','#f3ddcf','#ef67f7','#cff3d9'];
     
@@ -19,7 +22,8 @@
             for(var i in textArr){
                 word  = new wordCom({
                     text : textArr[i],
-                    color : colors[i]
+                    color : colors[i],
+                    index : i
                 }, this);
                 this.addWord(word);
             }
@@ -43,19 +47,52 @@
                 targCorlor = wordFrom.getCurColor(),
                 f = from - orientation,
                 t = to;
+
+            //此处需判断form 和 to 分别是否属于其他block
+            //如果属于,则需要从之前block中做剪切处理
+            
             var fn = function( f ){
                 orientation < 0? f-- : f++;
                 if(f == t)
-                    this.wordsArr[f].setCurColor( targCorlor , orientation );
+                    this.wordsArr[f].setCurColor( targCorlor , orientation , function(){
+                        //最后需改变block个word状态
+                        this.updateWordStatus([from , to]);
+                    } , true , this );
                 else
                     this.wordsArr[f].setCurColor( targCorlor , orientation , fn , f ,this);
+                //设置word状态
+                this.wordsArr[f].setBlocks([from , to]);
             }
             fn.call(this,f);
-            // while( f != t ){
-            //     orientation < 0? f-- : f++;
-            //     this.wordsArr[f].setCurColor( targCorlor , orientation , function(){} );
-            // }
         },
+        updateWordStatus : function( block ){
+            var orientation = from > to ? -1 : 1;
+            var from = block[0],
+                to = block[1],
+                wordFrom =  this.wordsArr[from],
+                wordTo = this.wordsArr[to],
+                wordCom = wordFrom ,
+                comIndex = wordCom.getIndex();
+            while( wordCom && comIndex>0 ){
+                if( from == comIndex  ){
+                    if( from <= to){
+                        
+                    }
+                }
+            }
+            
+        },
+        // //检查block是否可以合并
+        // checkBlock : function( block ){
+        //     var re = true,
+        //         form = block[0],
+        //         to = block[1],
+        //         orientation = from > to ? -1 : 1;
+        //     if( from == to) return re;
+        //     while( from != to){
+
+        //     }
+        // },
         //分割词汇
         cutWord : function( index ){
 
@@ -64,13 +101,16 @@
 //==============text对象定义结束=================
 
 //==============word类定义===================
-    var wordCom = function( data , parent){
+    var wordCom = function( data  , parent){
         this.$dom = null;
         this.$bg_bx = null;
         this.$bg_ani = null;
 
         this.parent  = parent;
         this.conf = {
+            index : data.index,
+            //所属block
+            blocks : [ data.index , data.index],
             text  : data.text,
             oriColor : data.color ,
             curColor : data.color
@@ -78,11 +118,10 @@
     };
     wordCom.prototype = {
         render : function( fatherDom ){
-            var html = template_text.replace('{{value}}' , this.conf.text );
             fatherDom = fatherDom || $("#keyword-panel");
+            var html = template_text.replace('{{value}}' , this.conf.text );
             html = $(html);
             this.setMyDom( html );
-            this.$dom = html;
             this.setBackColor( this.conf.oriColor );
             $(fatherDom).append( html );
         },
@@ -108,6 +147,12 @@
         },
         getCurColor : function(){
             return this.conf.curColor;
+        },
+        getIndex : function(){
+            return this.conf.index === 0 || this.conf.index>0 ? this.conf.index : -1;
+        },
+        setBlocks : function( block ){
+            block = block || [this.conf.index, this.conf.index];
         },
         setMyDom : function( dom ){
             this.$dom = dom;
