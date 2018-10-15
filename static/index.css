@@ -1,0 +1,106 @@
+*{
+    padding: 0;
+    margin: 0;
+    font-family: "Lato",Arial,Helvetica,sans-serif;
+    font-weight: 300;
+}
+li{
+    list-style: none;
+}
+a{
+    text-decoration: none;
+}
+body{
+    background:#efefef;
+}
+#main{
+    position: fixed;
+    width:800px;
+    height:200px;
+    top:50%;
+    left:50%;
+}
+#com-panel{
+    position: absolute;
+    background:#fff;
+    border:1px solid #ddd;
+    margin-left:-50%;
+    margin-top:-25%;
+    width:100%;
+    height:100%;
+    padding:10px;
+    color:#777;
+}
+
+.a-button{
+    display:inline-block;
+    padding:0 10px;
+    border-radius: 5px;
+    background:#eee;
+    border:1px solid #ddd;
+    color:#555;
+    line-height:25px;
+    font-size: 13px;
+    margin-left:10px;
+}
+.a-button:hover{
+    box-shadow: 1px 2px 5px #aaa;
+}
+.a-button.action{
+    background:red;
+    border:1px solid rgb(236, 14, 14);
+    color:#fff;
+}
+
+.keyword-box{
+    margin-top:30px;
+}
+.keyword-box span.vl{
+    position: relative;
+    display:inline-block;
+    box-sizing: border-box;
+    float:left;
+    padding:0 3px;
+    overflow:hidden;
+}
+.keyword-box span.vl i{
+    position: relative;
+    font-style: normal;
+    z-index: 5;
+}
+.keyword-box span.vl span{
+    display:block;
+    box-sizing: border-box;
+    position: absolute;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    z-index: 0;
+}
+.keyword-box span.vl span.bg-bx{
+    /* background:yellow; */
+}
+.keyword-box span.vl span.bg-ani{
+    /* background:rgb(128, 128, 47); */
+}
+
+
+/* .keyword-box .slider{
+    position: relative;
+}
+.keyword-box .slider .cuticon{
+    position: absolute;
+    display:block;
+    background: blue;
+    width: 7px;
+    height: 40px;
+    top: -15px;
+    left: -3px;
+}
+.keyword-box .slider .cuticon .sld-icon{
+    display:block;
+    width:100%;
+    height:15px;
+    background:#555;
+} */
