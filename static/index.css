@@ -137,6 +137,9 @@ body{
 .keyword-box .vl-bx .slider:hover{
     cursor: pointer;
 }
+.keyword-box .vl-bx .slider:hover .slider-bx{
+    background:none;
+}
 .keyword-box .vl-bx .slider:hover .slider-bx .sld-bar{
     background:rgb(214, 36, 36);
 }

@@ -16,6 +16,8 @@
     
 //==============word对象定义===================
     var textCom = {
+        savedStatus : null,
+
         init : function( data ){
             this.wordsArr = window.wordcoms = [];
             this.blocks  = data.blocks;
@@ -53,7 +55,44 @@
             this.wordsArr.push( wcom );
             wcom.render( $("#keyword-panel") );
         },
-        //合并
+        //把targIndex合进merge_block,同时从cut_block中切除
+        mergeAndCutBlockByIndex : function( targIndex , merge_block , cut_block){
+            targIndex = parseInt(targIndex);
+            var targWord = this.getWordByIndex(targIndex);
+            var merblock = $.extend( true , [] , merge_block),
+                cutblock = $.extend( true , [] , cut_block),
+                newMerge = [] , newCut = [];
+            var mergColor = this.getWordByIndex(merge_block[0]).getCurColor();
+            if( merblock[0]>merblock[1])
+                merblock = [merblock[1] , merblock[0]]
+            if( cutblock[0]>cutblock[1])
+                cutblock = [cutblock[1] , cutblock[0]]
+            if( targIndex < merblock[0]){
+                newMerge = [ targIndex , merblock[1]];
+                targWord.setCurColor( mergColor , -1 );
+            }else if( targIndex > merblock[1]){
+                newMerge = [ merblock[0] ,targIndex ]
+                targWord.setCurColor( mergColor , 1 );
+            }
+
+            if( cutblock[0] == cutblock[1] ){
+                newCut = [];
+            }else if( targIndex == cutblock[0] ){
+                newCut = [ cutblock[0]+1 , cutblock[1]  ];
+            }else if( targIndex == cutblock[1] ){
+                newCut = [ cutblock[0] , cutblock[0]-1 ];
+            }
+
+            for( var i= newMerge[0] ; i<=newMerge[1] ; i++){
+                this.getWordByIndex(i).setBlocks(newMerge);
+            }
+            for( var i= newCut[0] ; i<=newCut[1] ; i++){
+                this.getWordByIndex(i).setBlocks(newCut);
+            }
+
+            console.log( 'merge '+ targIndex +' in :[' +merge_block.toString()+ '];;' + 'cut '+targIndex+' from :[' + cut_block.toString()+ '];;')
+        },
+        //初始合并blocks
         mergeWord : function( from , to ){
             if( from === to ) return;
             //方向
@@ -78,29 +117,41 @@
             }
             fn.call(this,f);
         },
-        updateWordStatus : function( block ){
-            var orientation = from > to ? -1 : 1;
-            var from = block[0],
-                to = block[1],
-                wordCom = this.wordsArr[from] ,
-                comIndex;
-            while( wordCom && comIndex>0 ){
-                comIndex = wordCom.getIndex();
-                if( from == comIndex  ){
-                    if( orientation < 0 ){
+        // updateWordStatus : function( block ){
+        //     var orientation = from > to ? -1 : 1;
+        //     var from = block[0],
+        //         to = block[1],
+        //         wordCom = this.wordsArr[from] ,
+        //         comIndex;
+        //     while( wordCom && comIndex>0 ){
+        //         comIndex = wordCom.getIndex();
+        //         if( from == comIndex  ){
+        //             if( orientation < 0 ){
 
-                    }
-                }
-                wordCom = this.wordsArr[ orientation + comIndex ]
-            }
-        },
+        //             }
+        //         }
+        //         wordCom = this.wordsArr[ orientation + comIndex ]
+        //     }
+        // },
         getWordByIndex : function( index ){
             return this.wordsArr[ index ];
         },
+
         getLastNextWord : function( word , ori ){
             var index = parseInt( word.getIndex() );
             index += ori;
             return this.wordsArr[ index ];
+        },
+        //保存当前现场
+        saveWordsStatus : function(){
+            for( var i in this.wordsArr){
+                this.wordsArr[i].saveNodeStatus();
+            }
+        },
+        releaseWordsStatus : function(){
+            for( var i in this.wordsArr){
+                this.wordsArr[i].releaseNodeStatus();
+            }
         },
         // //检查block是否可以合并
         // checkBlock : function( block ){
@@ -127,6 +178,7 @@
         this.$bg_ani = null;
 
         this.parent  = parent;
+        this.savedStatus = null;
         this.conf = {
             index : data.index,
             //所属block
@@ -170,6 +222,7 @@
                 dom = e.currentTarget || e.target ,
                 disX = e.clientX - dom.offsetLeft,
                 leftTotal = this.conf.textLen.leftLen , rightTotal = this.conf.textLen.rightLen;
+            me.parent.saveWordsStatus();
 
             $(document).on('mousemove' , function( ev ){
                 var left = ev.clientX - disX;
@@ -179,14 +232,20 @@
                     return;
                 }
                 $(dom).css('left' , left +'px');
+                var mergeNode = left < 0 ? me.parent.getLastNextWord( me , 1) : me;
+                var cutNode = left > 0 ? me.parent.getLastNextWord( me , 1) : me;
+                var merge_block = mergeNode.conf.blocks;
+                var cut_block = cutNode.conf.blocks;
 
                 var curWord = me.getWordComByLeft(left);
-                if( me.checkInBlock(curWord , old_block) ){
-                    curWord.cutCurBlock( old_block );
-                }
-                var shouldBlock = me.getShouldBlock( curWord , old_block);
+                me.parent.mergeAndCutBlockByIndex(
+                    parseInt( curWord.getIndex() )
+                    ,merge_block
+                    ,cut_block
+                );
                 
-            })
+            });
+
             $(document).on("mouseup", function(ev){
                 // var curLeft = $(dom).css('left')
                 //     t_len = 0 , lastword = t_word = start = me ,
@@ -206,10 +265,9 @@
                 // console.log(block);
                 // me.parent.mergeWord(block[0] , block[1]);
 
-                $(dom).css({
-                    left : '-2px'
-                })
-
+                $(dom).css({left : '-2px'});
+                //释放节点状态
+                me.parent.releaseWordsStatus();
                 $(document).unbind("mousemove");
 				$(document).unbind("mouseup");
                 dom.releaseCapture && dom.releaseCapture();
@@ -217,6 +275,12 @@
             dom.setCapture && dom.setCapture();
         },
 
+        saveNodeStatus : function(){
+            this.savedStatus = $.extend( true , {} , this.conf);
+        },
+        releaseNodeStatus : function(){
+            this.savedStatus = null;
+        },
         //通过拖动距离，计算出当前游标所在节点
         getWordComByLeft : function( left ){
             var me = this;
