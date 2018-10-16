@@ -161,6 +161,11 @@ body{
 .keyword-box .vl-bx .slider:hover .slider-bx.hide .sld-bar::after{
     border-color:rgb(129, 123, 123) transparent transparent;
 }
+#result-panel{
+    position: absolute;
+    top: -20%;
+    left: -30%;
+}
 
 /* .keyword-box .slider{
     position: relative;

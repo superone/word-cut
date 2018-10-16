@@ -23,7 +23,7 @@
             this.blocks  = data.blocks;
             this.curBlocks = this.blocks;
 
-            var textArr = data.text.split(' '),
+            var textArr = this.textArr = data.text.split(' '),
                 html = "" ,
                 word,
                 defBlocks;
@@ -166,6 +166,33 @@
         //     }
         // },
         //分割词汇
+        searchAgain : function(){
+            var blocks = [] , t , texts=[];
+            for(var i in this.wordsArr){
+                t = this.wordsArr[i].conf.blocks;
+                if( this.inBlock( t , blocks) < 0 ){
+                    blocks.push(t);
+                }
+            }
+            for( var i in blocks){
+                var str = "";
+                for( var j=blocks[i][0]; j <= blocks[i][1] ; j++){
+                    str += (str?" " :'' ) + this.textArr[j];
+                }
+                texts.push( str );
+            }
+            
+            $("#result-panel").html( texts.toString() );
+        },
+        inBlock : function( block , list ){
+            var re = -1;
+            for (var i in list){
+                if( list[i][0] == block[0] && list[i][1] == block[1] ){
+                    re = i;
+                }
+            }
+            return re;
+        },
         cutWord : function( index ){
 
         }
@@ -344,14 +371,14 @@
         //变换背景,设置当前颜色
         setCurColor : function( color , ori , callback , fromI ,scope){
             var domW = this.$bg_ani.width();
-            console.log(-domW*ori);
+            console.log(500*(domW/80));
             this.$bg_bx.css('background' , this.conf.curColor);
             this.$bg_ani.css({
                 'left' : (-domW*ori) + 'px',
                 'background' : color
             }).animate({
                 left : 0
-            },300*(domW/80) , function(){
+            },500*(domW/80) , function(){
                 if(typeof callback == 'function' && typeof fromI != 'undefined')
                     callback.call(scope ? scope : this.parent , fromI);
             });
@@ -448,5 +475,8 @@
     
     window.onload = function(){
         textCom.init( text_data );
+        $('#search').click(function(){
+           textCom.searchAgain();
+        })
     }
 })();
