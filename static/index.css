@@ -91,12 +91,67 @@ body{
 .keyword-box .vl-bx .slider{
     position: absolute;
     display:block;
+    width:16px;
+    right:-8px;
+    top:-22px;
+    height:40px;
+    z-index:10;
+}
+.keyword-box .vl-bx .slider-bx{
+    position: absolute;
+    display:block;
+    left:5px;
     width:7px;
-    right:-4px;
-    top:-20px;
     height:40px;
     background:#fff;
     z-index:10;
+}
+.keyword-box .vl-bx .slider-bx .sld-bar{
+    display:block;
+    position: absolute;
+    left: -2px;
+    top: -3px;
+    width: 12px;
+    height: 15px;
+    background:#555;
+}
+.keyword-box .vl-bx .slider-bx .sld-bar::after{
+    content:'';
+    display:block;
+    position: absolute;
+    bottom:-8px;
+    left: 0px;
+    border-width: 8px 6px 0;
+    border-style:solid;
+    border-color:#555 transparent transparent;/*灰 透明 透明 */
+}
+
+.keyword-box .vl-bx .slider-bx.hide{
+    display:none;
+}
+.keyword-box .vl-bx .slider-bx.graycut{
+    display:block;
+    opacity: 0.5;
+}
+
+.keyword-box .vl-bx .slider:hover{
+    cursor: pointer;
+}
+.keyword-box .vl-bx .slider:hover .slider-bx .sld-bar{
+    background:rgb(214, 36, 36);
+}
+.keyword-box .vl-bx .slider:hover .slider-bx .sld-bar::after{
+    border-color:rgb(214, 36, 36) transparent transparent;
+}
+.keyword-box .vl-bx .slider:hover .slider-bx.hide{
+    display:block;
+    background:none;
+}
+.keyword-box .vl-bx .slider:hover .slider-bx.hide .sld-bar{
+    background:rgb(129, 123, 123);
+}
+.keyword-box .vl-bx .slider:hover .slider-bx.hide .sld-bar::after{
+    border-color:rgb(129, 123, 123) transparent transparent;
 }
 
 /* .keyword-box .slider{
