@@ -64,14 +64,15 @@
                 newMerge = [] , newCut = [];
             var mergColor = this.getWordByIndex(merge_block[0]).getCurColor();
             if( merblock[0]>merblock[1])
-                merblock = [merblock[1] , merblock[0]]
+                merblock = [merblock[1] , merblock[0]];
             if( cutblock[0]>cutblock[1])
-                cutblock = [cutblock[1] , cutblock[0]]
-            if( targIndex < merblock[0]){
+                cutblock = [cutblock[1] , cutblock[0]];
+            
+            if( targIndex < merblock[0] ){
                 newMerge = [ targIndex , merblock[1]];
                 targWord.setCurColor( mergColor , -1 );
-            }else if( targIndex > merblock[1]){
-                newMerge = [ merblock[0] ,targIndex ]
+            }else if( targIndex > merblock[1] ){
+                newMerge = [ merblock[0] ,targIndex ];
                 targWord.setCurColor( mergColor , 1 );
             }
 
@@ -217,12 +218,14 @@
         },
         //事件处理
         moveEvents : function( e ){
-            var me = this ,
+            // oriWord 记录上一次处理过的节点
+            var oriWord = me = this ,
                 old_block = me.conf.blocks,
                 dom = e.currentTarget || e.target ,
                 disX = e.clientX - dom.offsetLeft,
                 leftTotal = this.conf.textLen.leftLen , rightTotal = this.conf.textLen.rightLen;
             me.parent.saveWordsStatus();
+            me.$dom.find('.slider').addClass('moving');
 
             $(document).on('mousemove' , function( ev ){
                 var left = ev.clientX - disX;
@@ -232,17 +235,24 @@
                     return;
                 }
                 $(dom).css('left' , left +'px');
-                var mergeNode = left < 0 ? me.parent.getLastNextWord( me , 1) : me;
-                var cutNode = left > 0 ? me.parent.getLastNextWord( me , 1) : me;
+                /*
+                难点：
+                如果用户首先往A方向拉 , 触发节点状态改变
+                然后又往回拉，此时判断零界点应从另一方向计算距离
+                */
+
+                var mergeNode = left < 0 ? oriWord.parent.getLastNextWord( oriWord , 1) : oriWord;
+                var cutNode = left > 0 ? oriWord.parent.getLastNextWord( oriWord , 1) : oriWord;
                 var merge_block = mergeNode.conf.blocks;
                 var cut_block = cutNode.conf.blocks;
 
-                var curWord = me.getWordComByLeft(left);
-                me.parent.mergeAndCutBlockByIndex(
+                var curWord = oriWord.getWordComByLeft(left);
+                oriWord.parent.mergeAndCutBlockByIndex(
                     parseInt( curWord.getIndex() )
                     ,merge_block
                     ,cut_block
                 );
+                //oriWord = curWord;
                 
             });
 
@@ -271,6 +281,7 @@
                 $(document).unbind("mousemove");
 				$(document).unbind("mouseup");
                 dom.releaseCapture && dom.releaseCapture();
+                me.$dom.find('.slider').removeClass('moving');
             });
             dom.setCapture && dom.setCapture();
         },
@@ -305,12 +316,14 @@
             return cur;
         },
         //通过游标所在节点计算出目标block
+        // late
         getShouldBlock : function( toWordCom , old_block){
             var startI = parseInt( this.getIndex() ),
                 toI = parseInt( toWordCom.getIndex() );
             var old_color = this.parent.getWordByIndex( old_block[0] );
             old_color = old_color.conf.curColor;
         },
+        // late
         checkInBlock : function( word , block ){
             var index = parseInt(word.getIndex()),
                 max = block[0]>=block[1]? block[0] : block[1],
@@ -331,6 +344,7 @@
         //变换背景,设置当前颜色
         setCurColor : function( color , ori , callback , fromI ,scope){
             var domW = this.$bg_ani.width();
+            console.log(-domW*ori);
             this.$bg_bx.css('background' , this.conf.curColor);
             this.$bg_ani.css({
                 'left' : (-domW*ori) + 'px',
@@ -341,6 +355,7 @@
                 if(typeof callback == 'function' && typeof fromI != 'undefined')
                     callback.call(scope ? scope : this.parent , fromI);
             });
+            this.conf.curColor = color;
         },
 
         //+++++++GET SET s
@@ -358,6 +373,7 @@
         },
         setBlocks : function( block ){
             block = block || [this.conf.index, this.conf.index];
+            block = [ parseInt(block[0]),parseInt(block[1]) ];
             if( this.conf.blocks[0]==block[0] && this.conf.blocks[1]==block[1] )
                 return;
             var orientation = block[0] >= block[1] ? -1 : 1;

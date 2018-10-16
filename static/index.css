@@ -1,3 +1,4 @@
+html,body{-moz-user-select: none; -khtml-user-select: none; user-select: none;}
 *{
     padding: 0;
     margin: 0;
@@ -148,6 +149,10 @@ body{
 }
 .keyword-box .vl-bx .slider:hover .slider-bx.hide{
     display:block;
+    background:none;
+}
+.keyword-box .vl-bx .slider.moving .slider-bx{
+    display:block !important;
     background:none;
 }
 .keyword-box .vl-bx .slider:hover .slider-bx.hide .sld-bar{
