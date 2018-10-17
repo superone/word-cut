@@ -59,6 +59,7 @@ body{
 .keyword-panel{
     padding:0 15px;
     box-sizing: border-box;
+    color: #555;
 }
 .keyword-box .vl-bx{
     position: relative;
