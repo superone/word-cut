@@ -17,7 +17,7 @@ body{
 #main{
     position: fixed;
     width:800px;
-    height:200px;
+    height:220px;
     top:50%;
     left:50%;
 }
@@ -55,6 +55,10 @@ body{
 
 .keyword-box{
     margin-top:30px;
+}
+.keyword-panel{
+    padding:0 15px;
+    box-sizing: border-box;
 }
 .keyword-box .vl-bx{
     position: relative;
@@ -114,7 +118,7 @@ body{
     top: -3px;
     width: 12px;
     height: 15px;
-    background:#555;
+    background:#7d7a7a;
 }
 .keyword-box .vl-bx .slider-bx .sld-bar::after{
     content:'';
@@ -124,7 +128,7 @@ body{
     left: 0px;
     border-width: 8px 6px 0;
     border-style:solid;
-    border-color:#555 transparent transparent;/*灰 透明 透明 */
+    border-color:#7d7a7a transparent transparent;/*灰 透明 透明 */
 }
 
 .keyword-box .vl-bx .slider-bx.hide{
@@ -153,20 +157,47 @@ body{
 }
 .keyword-box .vl-bx .slider.moving .slider-bx{
     display:block !important;
-    background:none;
+    background:none !important;
+}
+.keyword-box .vl-bx .slider .slider-bx .sld-bar img{
+    display:none;
 }
 .keyword-box .vl-bx .slider:hover .slider-bx.hide .sld-bar{
-    background:rgb(129, 123, 123);
+    background:#ada6a6;
+}
+
+.keyword-box .vl-bx .slider:not(.moving):hover .slider-bx.hide .sld-bar::before{
+    content:'';
+    position: absolute;
+    top:16px;
+    left:5px;
+    display:block;
+    width:1px;
+    border-left:1px dashed #ada6a6;
+    height:30px;
+}
+.keyword-box .vl-bx .slider:not(.moving):hover .slider-bx.hide .sld-bar img{
+    display:block;
+    width:15px;
+    height:15px;
+    position: absolute;
+    top:45px;
+    left:-2px;
+    /* background:red; */
 }
 .keyword-box .vl-bx .slider:hover .slider-bx.hide .sld-bar::after{
-    border-color:rgb(129, 123, 123) transparent transparent;
+    border-color:#ada6a6 transparent transparent;
 }
 #result-panel{
     position: absolute;
-    top: -20%;
-    left: -30%;
+    top: -48%;
+    left: -47%;
 }
 
+
+.bar{
+    position: absolute;
+}
 /* .keyword-box .slider{
     position: relative;
 }
