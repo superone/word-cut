@@ -450,9 +450,17 @@ console.log( [ cur_index+1 , cur_block[1]].toString());
             var newBlock = [old_block[0] , curIndex];  
             var nextcolor = this.parent.getLastNextWord( this , 1) ? this.parent.getLastNextWord( this , 1).conf.curColor:false ,
                 lastcolor = this.parent.getLastNextWord( this , 1) ? this.parent.getLastNextWord( this , -1).conf.curColor:false ;
-            var newColor = getOtherColor([nextcolor , lastcolor]);
 
-            this.parent.mergeWord( curIndex , curIndex , newColor);
+            var newColor = getOtherColor([nextcolor , lastcolor]);
+            var orientation = this.temp.tmpleft<0 ? -1 : 1;
+            var lastNode = this.parent.getLastNextWord( this , orientation);
+            var mergBlock = [curIndex , curIndex];
+            if( !!lastNode.temp.tmpleft ){
+                mergBlock = lastNode.conf.blocks;
+                newColor = lastNode.conf.curColor;
+            }
+
+            this.parent.mergeWord( mergBlock[0] , mergBlock[0] , newColor);
             this.temp.changed = false;
 
             var last_node = this.parent.getLastNextWord( this , -1);
@@ -652,12 +660,39 @@ console.log( [ cur_index+1 , cur_block[1]].toString());
     };
     
     window.onload = function(){
+        $(".form-control").val( text_data.text );
+        $(".result-text.tipstext").html( text_data.text );
         textCom.init( text_data );
+
+        var fn = function(){
+            var keyword = $(".form-control").val();
+            keyword = keyword.replace(/\s{1,}/g, " ");
+            var arr = keyword.split(" ")
+            if(keyword.length >2){
+                $(".form-control").val( keyword );
+                $(".result-text.tipstext").html( keyword );
+                textCom.init({
+                    text : keyword,
+                    blocks : keyword==text_data.text ? text_data.blocks : [[0 , arr.length-1]]
+                });
+            }
+        }
+
         $('#search').click(function(){
            textCom.searchAgain();
         })
         $('#reset').click(function(){
+            $(".form-control").val( text_data.text );
+            $(".result-text.tipstext").html( text_data.text );
             textCom.init( text_data );
         })
+        $('.la-Search').click(function(){
+            fn();
+        });
+        $('.form-control').on('keydown',function( e ){
+            if(e.type=='keydown' && e.keyCode == 13){
+                fn();
+            }
+        });
     }
 })();
